@@ -78,6 +78,8 @@ function LoginRequiredModal({ onClose }) {
   )
 }
 
+const PREVIEW_LIMIT = 24
+
 export default function PublicCatalogPage() {
   useSEO({ title: 'Catálogo', description: 'Más de 500 monedas conmemorativas de 2€ de todos los países de la eurozona' })
 
@@ -88,6 +90,8 @@ export default function PublicCatalogPage() {
   const [showPropose, setShowPropose]   = useState(false)
   const [proposeUser, setProposeUser]   = useState(null)
   const [checkingUser, setCheckingUser] = useState(false)
+
+  const isFiltering = !!(search || country || rarity)
 
   const filtered = useMemo(() => {
     return ALL_COINS.filter(coin => {
@@ -105,6 +109,10 @@ export default function PublicCatalogPage() {
       return matchSearch && matchCountry && matchRarity
     })
   }, [ALL_COINS, search, country, rarity])
+
+  // Cuando no hay filtros activos, limitamos las monedas visibles
+  const visibleCoins = isFiltering ? filtered : filtered.slice(0, PREVIEW_LIMIT)
+  const hiddenCount  = isFiltering ? 0 : Math.max(0, filtered.length - PREVIEW_LIMIT)
 
   async function handleProposeClick() {
     setCheckingUser(true)
@@ -182,7 +190,7 @@ export default function PublicCatalogPage() {
             <option value="common">⚪ Comunes (&gt;1M)</option>
           </select>
           <span className="text-sm text-gray-500 dark:text-gray-400 self-center">
-            {loading ? '...' : `${filtered.length} monedas`}
+            {loading ? '...' : isFiltering ? `${filtered.length} monedas` : `${ALL_COINS.length} monedas`}
           </span>
         </div>
 
@@ -192,10 +200,51 @@ export default function PublicCatalogPage() {
             <div className="w-8 h-8 border-4 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
-            {filtered.map(coin => (
-              <PublicCoinCard key={coin.id} coin={coin} />
-            ))}
+          <div className="relative">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+              {visibleCoins.map(coin => (
+                <PublicCoinCard key={coin.id} coin={coin} />
+              ))}
+            </div>
+
+            {/* Teaser: difuminado + CTA cuando hay monedas ocultas */}
+            {hiddenCount > 0 && (
+              <div className="relative mt-3">
+                {/* Filas fantasma difuminadas */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 blur-sm pointer-events-none select-none" aria-hidden="true">
+                  {ALL_COINS.slice(PREVIEW_LIMIT, PREVIEW_LIMIT + 5).map(coin => (
+                    <PublicCoinCard key={coin.id} coin={coin} />
+                  ))}
+                </div>
+
+                {/* Overlay degradado + CTA */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-transparent via-gray-50/80 to-gray-50 dark:via-gray-900/80 dark:to-gray-900 rounded-xl">
+                  <div className="text-center px-4 py-6 max-w-md">
+                    <p className="text-3xl mb-2">🔒</p>
+                    <p className="text-lg font-bold text-gray-800 dark:text-white mb-1">
+                      Y {hiddenCount.toLocaleString()} monedas más...
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                      Regístrate gratis para ver el catálogo completo, marcar las monedas que tienes y seguir tu progreso.
+                    </p>
+                    <div className="flex gap-3 justify-center flex-wrap">
+                      <Link
+                        to="/register"
+                        className="bg-yellow-400 hover:bg-yellow-300 text-blue-900 font-bold px-6 py-2.5 rounded-xl transition text-sm"
+                      >
+                        Crear cuenta gratis →
+                      </Link>
+                      <Link
+                        to="/login"
+                        className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-5 py-2.5 rounded-xl transition text-sm hover:bg-gray-50"
+                      >
+                        Ya tengo cuenta
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

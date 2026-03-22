@@ -185,25 +185,41 @@ export default function AdminImagePage() {
 
   const handleReject = async (coinId) => {
     const url = coinImages[coinId]?.supabase_url || ''
-    const ext = url.includes('.png') ? 'png' : 'jpg'
 
-    // Borramos de Storage
-    await supabase.storage.from('coins').remove([`${coinId}.${ext}`])
+    // Extraemos el path del archivo desde la URL (último segmento, sin query params)
+    const storagePath = url ? url.split('/').pop()?.split('?')[0] : null
 
-    // Actualizamos en coin_images
-    await supabase.from('coin_images').upsert({
-      coin_id: coinId,
-      supabase_url: null,
-      status: 'rejected',
-      rejected_at: new Date().toISOString(),
-      rejected_by: user.id
-    })
+    try {
+      // 1. Borramos de Storage (si hay archivo)
+      if (storagePath) {
+        const { error: storageError } = await supabase.storage
+          .from('coins')
+          .remove([storagePath])
+        if (storageError) console.warn('Error borrando de Storage:', storageError.message)
+      }
 
-    // Actualizamos estado local
-    setCoinImages(prev => ({
-      ...prev,
-      [coinId]: { ...prev[coinId], supabase_url: null, status: 'rejected' }
-    }))
+      // 2. Limpiamos la referencia en coin_images
+      await supabase.from('coin_images').upsert({
+        coin_id: coinId,
+        supabase_url: null,
+        status: 'rejected',
+        rejected_at: new Date().toISOString(),
+        rejected_by: user.id
+      })
+
+      // 3. Limpiamos image_url en la tabla coins
+      await supabase.from('coins').update({ image_url: null }).eq('id', coinId)
+
+      // 4. Actualizamos estado local
+      setCoinImages(prev => ({
+        ...prev,
+        [coinId]: { ...prev[coinId], supabase_url: null, status: 'rejected' }
+      }))
+
+      showToast('Imagen rechazada y referencias eliminadas', 'info')
+    } catch (e) {
+      showToast(`Error al rechazar: ${e.message}`, 'error')
+    }
   }
 
   const handleUpload = async (coinId, imageUrl) => {
