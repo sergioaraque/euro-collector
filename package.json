@@ -5,7 +5,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "verify-catalog": "node scripts/verify-catalog.cjs",
+    "patch-catalog": "node scripts/patch-catalog.cjs",
+    "patch-catalog:dry": "node scripts/patch-catalog.cjs --dry-run",
+    "patch-catalog:auto": "node scripts/patch-catalog.cjs --yes"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.98.0",

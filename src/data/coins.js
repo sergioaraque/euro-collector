@@ -2,8 +2,8 @@ export const ALL_COINS = [
   // ── ALEMANIA ──────────────────────────────────────────────────────
   { id: 'de_2006_sh',  country: 'Alemania', year: 2006, description: 'Puerta de Holstein - Schleswig-Holstein', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2006_sh.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer' },
   { id: 'de_2007_tr',  country: 'Alemania', year: 2007, description: '50 años Tratado de Roma', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2007_tr.jpg', mintage: 30000000, commemorates: 'Tratado de Roma' },
-  { id: 'de_2007_hh',  country: 'Alemania', year: 2007, description: 'Hamburgo - Puerta de Brandeburgo', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2007_hh.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer' },
-  { id: 'de_2008_by',  country: 'Alemania', year: 2008, description: 'Baviera - Castillo de Nuremberg', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2008_by.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer' },
+  { id: 'de_2007_hh',  country: 'Alemania', year: 2007, description: 'Mecklemburgo-Vorpommern - Castillo de Schwerin', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2007_hh.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer I'},
+  { id: 'de_2008_by',  country: 'Alemania', year: 2008, description: 'Hamburgo - Iglesia de San Miguel', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2008_by.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer I'},
   { id: 'de_2009_emu', country: 'Alemania', year: 2009, description: '10 años UEM', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2009_emu.jpg', mintage: 30000000, commemorates: '10 años UEM' },
   { id: 'de_2009_sl',  country: 'Alemania', year: 2009, description: 'Sarre - Catedral de Saarbrücken', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2009_sl.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer' },
   { id: 'de_2010_hb',  country: 'Alemania', year: 2010, description: 'Bremen - Palacio de Bremen', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2010_hb.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer' },
@@ -14,16 +14,16 @@ export const ALL_COINS = [
   { id: 'de_2014_ni',  country: 'Alemania', year: 2014, description: 'Baja Sajonia - Hannover', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2014_ni.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer' },
   { id: 'de_2015_ru',  country: 'Alemania', year: 2015, description: '25 años Reunificación alemana', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2015_ru.jpg', mintage: 30000000, commemorates: 'Reunificación' },
   { id: 'de_2015_he',  country: 'Alemania', year: 2015, description: 'Hessen - Puerta de Frankfurt', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2015_he.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer' },
-  { id: 'de_2016_mv',  country: 'Alemania', year: 2016, description: 'Mecklemburgo - Castillo de Schwerin', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2016_mv.png', mintage: 30000000, commemorates: 'Serie Bundesländer' },
+  { id: 'de_2016_mv',  country: 'Alemania', year: 2016, description: 'Sajonia - Zwinger de Dresde', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2016_mv.png', mintage: 30000000, commemorates: 'Serie Bundesländer I'},
   { id: 'de_2017_rp',  country: 'Alemania', year: 2017, description: 'Renania-Palatinado - Puerta de Maguncia', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2017_rp.png', mintage: 30000000, commemorates: 'Serie Bundesländer' },
   { id: 'de_2018_be',  country: 'Alemania', year: 2018, description: 'Berlín - Puerta de Brandeburgo', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2018_be.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer' },
   { id: 'de_2019_br',  country: 'Alemania', year: 2019, description: '70 años Bundesrat', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2019_br.jpg', mintage: 30000000, commemorates: '70 años Bundesrat' },
-  { id: 'de_2019_th',  country: 'Alemania', year: 2019, description: 'Turingia - Castillo de Wartburg', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2019_th.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer' },
+  { id: 'de_2019_th',  country: 'Alemania', year: 2021, description: 'Turingia - Catedral de Erfurt', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2019_th.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer I'},
   { id: 'de_2020_kn',  country: 'Alemania', year: 2020, description: 'Kniefall de Varsovia', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2020_kn.jpg', mintage: 30000000, commemorates: '50 años Kniefall' },
-  { id: 'de_2020_bb',  country: 'Alemania', year: 2020, description: 'Brandeburgo - Palacio de Sanssouci', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2020_bb.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer' },
-  { id: 'de_2021_st',  country: 'Alemania', year: 2021, description: 'Sajonia-Anhalt - Catedral de Magdeburgo', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2021_st.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer' },
+  { id: 'de_2020_bb',  country: 'Alemania', year: 2019, description: 'Brandeburgo - Palacio de Sanssouci', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2020_bb.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer I'},
+  { id: 'de_2021_st',  country: 'Alemania', year: 2020, description: 'Sajonia-Anhalt - Catedral de Magdeburgo', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2021_st.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer I'},
   { id: 'de_2022_er',  country: 'Alemania', year: 2022, description: 'Programa Erasmus', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2022_er.jpg', mintage: 30000000, commemorates: '35 años Erasmus' },
-  { id: 'de_2022_hh',  country: 'Alemania', year: 2022, description: 'Hamburgo - Elbphilharmonie', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2022_hh.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer' },
+  { id: 'de_2022_hh',  country: 'Alemania', year: 2023, description: 'Hamburgo - Elbphilharmonie', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2022_hh.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer II'},
   { id: 'de_2023_hh',  country: 'Alemania', year: 2023, description: 'Hamburgo - Speicherstadt', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2023_hh.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer' },
 
   // ── AUSTRIA ───────────────────────────────────────────────────────
@@ -133,7 +133,7 @@ export const ALL_COINS = [
   { id: 'fr_2013', country: 'Francia', year: 2013, description: '150 años Pierre de Coubertin', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/fr_2013.png', mintage: 10000000, commemorates: 'Pierre de Coubertin' },
   { id: 'fr_2014', country: 'Francia', year: 2014, description: '70 años Desembarco de Normandía', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/fr_2014.png', mintage: 10000000, commemorates: 'Día D' },
   { id: 'fr_2015', country: 'Francia', year: 2015, description: '30 años Bandera UE', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/fr_2015.png', mintage: 10000000, commemorates: 'Bandera UE' },
-  { id: 'fr_2015b', country: 'Francia', year: 2015, description: 'Museo del Louvre', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/fr_2015b.png', mintage: 10000000, commemorates: 'Louvre' },
+  { id: 'fr_2015b', country: 'Francia', year: 2015, description: 'Fiesta de la Federación - 225 aniversario', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/fr_2015b.png', mintage: 10000000, commemorates: 'Fête de la Fédération'},
   { id: 'fr_2017', country: 'Francia', year: 2017, description: '100 años Auguste Rodin', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/fr_2017.png', mintage: 10000000, commemorates: 'Auguste Rodin' },
   { id: 'fr_2018', country: 'Francia', year: 2018, description: 'Simone Veil', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/fr_2018.png', mintage: 10000000, commemorates: 'Simone Veil' },
   { id: 'fr_2020', country: 'Francia', year: 2020, description: '100 años fallecimiento Claude Monet', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/fr_2020.png', mintage: 10000000, commemorates: 'Claude Monet' },
@@ -486,7 +486,29 @@ export const ALL_COINS = [
 
   // ── EMISIONES 2025 (Programadas/Emitidas) ──────────────────────────
   { id: 'de_2025_sl', country: 'Alemania', year: 2025, description: 'Sarre - Saarschleife (Meandro del Sarre)', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/de_2025_sl.jpg', mintage: 30000000, commemorates: 'Serie Bundesländer II' },
+
+  { id: 'de_2013_el', country: 'Alemania', year: 2013, description: '50 años Tratado del Elíseo', imageUrl: null, mintage: 30000000, commemorates: 'Tratado del Elíseo (joint con Francia)' },
+
+  { id: 'de_2015_eu', country: 'Alemania', year: 2015, description: '30 años Bandera de la UE', imageUrl: null, mintage: 30000000, commemorates: 'Bandera UE' },
+
+  { id: 'de_2018_hs', country: 'Alemania', year: 2018, description: '100 años Helmut Schmidt', imageUrl: null, mintage: 30000000, commemorates: '100 años Helmut Schmidt' },
+
+  { id: 'de_2019_mauer', country: 'Alemania', year: 2019, description: '30 años Caída del Muro de Berlín', imageUrl: null, mintage: 30000000, commemorates: '30 años Caída del Muro (joint con Francia)' },
+
+  { id: 'de_2021_th2', country: 'Alemania', year: 2021, description: 'Turingia - Castillo de Wartburg', imageUrl: null, mintage: 30000000, commemorates: 'Serie Bundesländer I' },
+
+  { id: 'de_2022_th', country: 'Alemania', year: 2022, description: 'Turingia - Serie Bundesländer II', imageUrl: null, mintage: 30000000, commemorates: 'Serie Bundesländer II' },
+
+  { id: 'de_2024_fk', country: 'Alemania', year: 2024, description: '175 años Constitución de Frankfurt', imageUrl: null, mintage: 30000000, commemorates: '175 años Paulskirchenverfassung' },
+
+  { id: 'de_2025_reu', country: 'Alemania', year: 2025, description: '35 años Reunificación Alemana', imageUrl: null, mintage: 30000000, commemorates: '35 años Reunificación' },
   { id: 'es_2025_sa', country: 'España', year: 2025, description: 'Ciudad vieja de Salamanca', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/es_2025_sa.jpg', mintage: 2000000, commemorates: 'UNESCO - Salamanca' },
+
+  { id: 'es_2012b', country: 'España', year: 2012, description: 'Catedral de Burgos - Patrimonio UNESCO', imageUrl: null, mintage: 7000000, commemorates: 'Catedral de Burgos (UNESCO)' },
+
+  { id: 'es_2018b', country: 'España', year: 2018, description: '50 aniversario de Felipe VI', imageUrl: null, mintage: 7000000, commemorates: '50 aniversario Felipe VI' },
+
+  { id: 'es_2022b', country: 'España', year: 2022, description: '500 años primera vuelta al mundo - Juan Sebastián Elcano', imageUrl: null, mintage: 7000000, commemorates: '500 años circunnavegación Elcano' },
   { id: 'be_2025_lot', country: 'Bélgica', year: 2025, description: 'Lotería Nacional de Bélgica', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/be_2025_lot.jpg', mintage: 1000000, commemorates: 'Lotería Nacional' },
   { id: 'it_2025_jub', country: 'Italia', year: 2025, description: 'Año Jubilar 2025', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/it_2025_jub.jpg', mintage: 3000000, commemorates: 'Jubileo 2025' },
   { id: 'sk_2025_ih',  country: 'Eslovaquia', year: 2025, description: '100 años del Campeonato Europeo de Hockey sobre Hielo', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/sk_2025_ih.jpg', mintage: 1000000, commemorates: 'Deporte eslovaco' },
@@ -494,6 +516,24 @@ export const ALL_COINS = [
   { id: 'lt_2025_def', country: 'Lituania', year: 2025, description: 'Defensa del Estado Lituano', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/lt_2025_def.jpg', mintage: 500000, commemorates: 'Defensa Nacional' },
   { id: 'fr_2025_lou', country: 'Francia', year: 2025, description: 'Museo del Louvre - La Gioconda', imageUrl: 'https://idoiwlaxghwdbamkhftu.supabase.co/storage/v1/object/public/coins/fr_2025_lou.png', mintage: 315000, commemorates: 'Louvre' },
 
+
+  { id: 'fr_2012b', country: 'Francia', year: 2012, description: '100 años Abbé Pierre', imageUrl: null, mintage: 10000000, commemorates: 'Abbé Pierre' },
+
+  { id: 'fr_2013b', country: 'Francia', year: 2013, description: '50 años Tratado del Elíseo', imageUrl: null, mintage: 10000000, commemorates: 'Tratado del Elíseo (joint con Alemania)' },
+
+  { id: 'fr_2017b', country: 'Francia', year: 2017, description: 'Campaña contra el cáncer de mama', imageUrl: null, mintage: 10000000, commemorates: 'Lazo rosa - cáncer de mama' },
+
+  { id: 'fr_2018b', country: 'Francia', year: 2018, description: 'Bleuet de France - 100 años Armisticio WWI', imageUrl: null, mintage: 10000000, commemorates: '100 años Armisticio WWI' },
+
+  { id: 'fr_2019b', country: 'Francia', year: 2019, description: '30 años Caída del Muro de Berlín', imageUrl: null, mintage: 10000000, commemorates: '30 años Caída del Muro (joint con Alemania)' },
+
+  { id: 'fr_2021b', country: 'Francia', year: 2021, description: '75 años UNICEF', imageUrl: null, mintage: 10000000, commemorates: '75 años UNICEF' },
+
+  { id: 'fr_2022b', country: 'Francia', year: 2022, description: '20 años muerte de Jacques Chirac', imageUrl: null, mintage: 10000000, commemorates: 'Jacques Chirac' },
+
+  { id: 'fr_2023b', country: 'Francia', year: 2023, description: 'Copa del Mundo de Rugby Francia 2023', imageUrl: null, mintage: 10000000, commemorates: 'Rugby World Cup 2023' },
+
+  { id: 'fr_2025b', country: 'Francia', year: 2025, description: 'Restauración de Notre-Dame de París', imageUrl: null, mintage: 10000000, commemorates: 'Notre-Dame restauración' },
   // ─── GRECIA — monedas faltantes ───────────────────────────────────────────
   { id: 'gr_2014a', country: 'Grecia', year: 2014, description: '600 años Unión de las Islas Jónicas con Grecia', imageUrl: null, mintage: 750000, commemorates: 'Islas Jónicas' },
   { id: 'gr_2014b', country: 'Grecia', year: 2014, description: '450 años nacimiento de El Greco', imageUrl: null, mintage: 750000, commemorates: 'El Greco' },
@@ -510,6 +550,8 @@ export const ALL_COINS = [
   { id: 'gr_2021a', country: 'Grecia', year: 2021, description: '200 años Revolución Griega - Adamantios Korais', imageUrl: null, mintage: 500000, commemorates: '200 años Independencia' },
   { id: 'gr_2021b', country: 'Grecia', year: 2021, description: '200 años Revolución Griega - Patriarca Gregorio V', imageUrl: null, mintage: 500000, commemorates: '200 años Independencia' },
 
+
+  { id: 'gr_2014', country: 'Grecia', year: 2014, description: '2400 años muerte de Platón', imageUrl: null, mintage: 750000, commemorates: '2400 años Platón' },
   // ─── MALTA — monedas faltantes ────────────────────────────────────────────
   { id: 'mt_2011', country: 'Malta', year: 2011, description: 'Primer gobierno representativo de Malta (1849)', imageUrl: null, mintage: 400000, commemorates: 'Democracia maltesa' },
   { id: 'mt_2015b', country: 'Malta', year: 2015, description: 'Desde la Solidaridad de los Niños - 30 años Bandera UE', imageUrl: null, mintage: 30000, commemorates: 'Bandera UE' },
@@ -596,6 +638,8 @@ export const ALL_COINS = [
   // ─── PORTUGAL — monedas faltantes ────────────────────────────────────────
   { id: 'pt_2008', country: 'Portugal', year: 2008, description: '60 años Declaración Universal de Derechos Humanos', imageUrl: null, mintage: 1250000, commemorates: '60 años DDHH' },
 
+
+  { id: 'pt_2013b', country: 'Portugal', year: 2013, description: '50 años Tratado del Elíseo', imageUrl: null, mintage: 1000000, commemorates: 'Tratado del Elíseo' },
   // ─── ESTONIA — monedas faltantes ─────────────────────────────────────────
   { id: 'ee_2011', country: 'Estonia', year: 2011, description: '1er aniversario del euro en Estonia', imageUrl: null, mintage: 1000000, commemorates: '1 año euro Estonia' },
   { id: 'ee_2013', country: 'Estonia', year: 2013, description: 'Finno-Ugric Peoples', imageUrl: null, mintage: 1000000, commemorates: 'Pueblos Finougrios' },
