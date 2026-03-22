@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useCoins } from '../hooks/useCoins'
+import { showToast } from './Toast'
 
 const MESSAGE_TYPES = [
   { value: 'general',     label: '💬 General' },
@@ -45,16 +46,20 @@ export default function WallComposer({
       })
       if (result?.error) {
         if (result.error.message?.includes('Rate limit')) {
-          alert('Has alcanzado el límite de 10 mensajes por hora. Inténtalo más tarde.')
+          showToast('Has alcanzado el límite de 10 mensajes por hora. Inténtalo más tarde.', 'error')
         } else {
-          alert('Error al enviar el mensaje. Inténtalo de nuevo.')
+          showToast('Error al enviar el mensaje. Inténtalo de nuevo.', 'error')
         }
-        setSending(false)
         return
       }
-      window.location.reload()
-    } catch (e) {
-      alert('Error al enviar el mensaje. Inténtalo de nuevo.')
+      setMessage('')
+      setSelectedCoin(null)
+      setCoinSearch('')
+      setType('general')
+      setShowCoinSearch(false)
+    } catch {
+      showToast('Error al enviar el mensaje. Inténtalo de nuevo.', 'error')
+    } finally {
       setSending(false)
     }
   }

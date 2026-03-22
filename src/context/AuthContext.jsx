@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { supabase } from '../supabase'
 import { notifyLogin } from '../lib/discord'
 import { useCoins } from '../hooks/useCoins'
@@ -9,12 +9,14 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
-  const { ALL_COINS, COUNTRIES}  = useCoins()
+  const { ALL_COINS } = useCoins()
+  const allCoinsRef = useRef(ALL_COINS)
   const [profile, setProfile] = useState(null)
+
+  useEffect(() => { allCoinsRef.current = ALL_COINS }, [ALL_COINS])
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('onAuthStateChange evento:', event)
 
       if (event === 'SIGNED_OUT') {
         setUser(null)
@@ -61,7 +63,7 @@ export function AuthProvider({ children }) {
                 session.user.email,
                 profile?.username,
                 count || 0,
-                ALL_COINS.length
+                allCoinsRef.current.length
               )
             } catch (e) {
               console.error('Error notificando Discord:', e)

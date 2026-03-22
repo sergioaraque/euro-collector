@@ -1,4 +1,4 @@
-import { createContext, useContext, useCallback } from 'react'
+import { createContext, useContext, useCallback, useRef } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../supabase'
 import { useAuth } from './AuthContext'
@@ -45,8 +45,11 @@ export function CollectionProvider({ children }) {
     }
   }
 
+  const togglingRef = useRef(new Set())
+
   const toggleCoin = useCallback(async (coinId) => {
-    if (!user) return
+    if (!user || togglingRef.current.has(coinId)) return
+    togglingRef.current.add(coinId)
     const isOwned = owned.has(coinId)
     const coin = ALL_COINS.find(c => c.id === coinId)
 
@@ -62,6 +65,7 @@ export function CollectionProvider({ children }) {
       if (deleteError) {
         queryClient.setQueryData(queryKey, owned) // revertir
         showToast('Error al eliminar la moneda', 'error')
+        togglingRef.current.delete(coinId)
         return
       }
 
@@ -77,6 +81,7 @@ export function CollectionProvider({ children }) {
       if (insertError) {
         queryClient.setQueryData(queryKey, owned) // revertir
         showToast('Error al añadir la moneda', 'error')
+        togglingRef.current.delete(coinId)
         return
       }
 
@@ -94,16 +99,17 @@ export function CollectionProvider({ children }) {
       }
 
       // Verificamos insignias después de añadir
-      const newBadges = await checkAndAwardBadges(user.id, newOwned)
+      const newBadges = await checkAndAwardBadges(user.id, newOwned, ALL_COINS)
       for (const badgeId of newBadges) {
         const { data } = await supabase
           .from('badges')
           .select('name, icon')
           .eq('id', badgeId)
-          .single()
+          .maybeSingle()
         if (data) showToast(`${data.icon} ¡Insignia desbloqueada! ${data.name}`, 'success')
       }
     }
+    togglingRef.current.delete(coinId)
   }, [user, profile, owned, queryKey, queryClient])
 
   return (

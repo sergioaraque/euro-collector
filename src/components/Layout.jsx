@@ -109,6 +109,7 @@ export default function Layout() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setMobileSearchOpen(s => !s)}
+                aria-label="Buscar"
                 className="md:hidden bg-blue-700 dark:bg-gray-700 hover:bg-blue-600 px-3 py-1.5 rounded-lg text-sm transition"
               >
                 🔍
@@ -116,6 +117,7 @@ export default function Layout() {
 
               <button
                 onClick={toggleLang}
+                aria-label={i18n.language === 'es' ? 'Cambiar a inglés' : 'Cambiar a español'}
                 className="bg-blue-700 dark:bg-gray-700 hover:bg-blue-600 px-3 py-1.5 rounded-lg text-sm transition"
               >
                 {i18n.language === 'es' ? '🇬🇧' : '🇪🇸'}
@@ -124,8 +126,8 @@ export default function Layout() {
               {/* Modo oscuro */}
               <button
                 onClick={toggle}
+                aria-label={dark ? 'Activar modo claro' : 'Activar modo oscuro'}
                 className="bg-blue-700 dark:bg-gray-700 hover:bg-blue-600 px-3 py-1.5 rounded-lg text-sm transition"
-                title="Modo oscuro"
               >
                 {dark ? '☀️' : '🌙'}
               </button>
@@ -133,8 +135,10 @@ export default function Layout() {
               <div className="relative" ref={themesRef}>
                 <button
                   onClick={() => setShowThemes(s => !s)}
+                  aria-label="Cambiar tema de color"
+                  aria-expanded={showThemes}
+                  aria-haspopup="listbox"
                   className="bg-black/20 hover:bg-black/30 px-3 py-1.5 rounded-lg text-sm transition"
-                  title="Cambiar tema"
                 >
                   🎨
                 </button>
@@ -172,6 +176,8 @@ export default function Layout() {
 
               <button
                 onClick={() => setMobileMenuOpen(s => !s)}
+                aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+                aria-expanded={mobileMenuOpen}
                 className="sm:hidden bg-blue-700 dark:bg-gray-700 hover:bg-blue-600 px-3 py-1.5 rounded-lg text-sm transition"
               >
                 {mobileMenuOpen ? '✕' : '☰'}
@@ -269,6 +275,8 @@ export default function Layout() {
           <div className="relative" ref={personalRef}>
             <button
               onClick={() => setShowPersonal(s => !s)}
+              aria-expanded={showPersonal}
+              aria-haspopup="menu"
               className={`px-4 py-2.5 text-sm font-medium transition border-b-2 whitespace-nowrap flex items-center gap-1 ${
                 isPersonalActive
                   ? 'border-yellow-400 text-yellow-300'

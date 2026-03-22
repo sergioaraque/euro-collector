@@ -36,7 +36,7 @@ export function useWallMessages(parentId = null, limit = 50) {
 
     // Realtime — actualiza automáticamente cuando hay mensajes nuevos
     const channel = supabase
-      .channel('wall_messages')
+      .channel(`wall_messages_${parentId ?? 'root'}`)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',

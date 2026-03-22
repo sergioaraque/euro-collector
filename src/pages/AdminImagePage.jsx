@@ -3,6 +3,7 @@ import { supabase } from '../supabase'
 import { useCoins } from '../hooks/useCoins'
 import { useAuth } from '../context/AuthContext'
 import { useCoinImage } from '../hooks/useCoinImage'
+import { showToast } from '../components/Toast'
 
 const FILTERS = ['todas', 'ok', 'rejected', 'pending', 'sin_imagen']
 
@@ -146,7 +147,7 @@ export default function AdminImagePage() {
 
   const countries = useMemo(() => {
     return [...new Set(ALL_COINS.map(c => c.country))].sort()
-  }, [])
+  }, [ALL_COINS])
 
   const coins = useMemo(() => {
     return ALL_COINS.map(coin => ({
@@ -154,7 +155,7 @@ export default function AdminImagePage() {
       supabaseUrl: coinImages[coin.id]?.supabase_url || coin.imageUrl || null,
       imgStatus: coinImages[coin.id]?.status || (coin.imageUrl ? 'ok' : 'pending'),
     }))
-  }, [coinImages])
+  }, [ALL_COINS, coinImages])
 
   const filtered = useMemo(() => {
     return coins.filter(coin => {
@@ -217,7 +218,6 @@ export default function AdminImagePage() {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
           },
           body: JSON.stringify({ coinId, imageUrl })
         }
@@ -237,7 +237,7 @@ export default function AdminImagePage() {
       }))
 
     } catch (e) {
-      alert(`Error: ${e.message}`)
+      showToast(`Error: ${e.message}`, 'error')
     }
     setUploading(null)
   }

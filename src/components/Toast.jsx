@@ -4,7 +4,7 @@ let toastQueue = []
 let listeners = []
 
 export function showToast(message, type = 'success') {
-  const toast = { id: Date.now(), message, type }
+  const toast = { id: crypto.randomUUID(), message, type }
   toastQueue = [...toastQueue, toast]
   listeners.forEach(l => l([...toastQueue]))
   setTimeout(() => {
