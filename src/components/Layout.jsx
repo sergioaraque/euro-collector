@@ -4,6 +4,7 @@ import { useCollection } from '../context/CollectionContext'
 import { useAdmin } from '../hooks/useAdmin'
 import { useCoins } from '../hooks/useCoins'
 import GlobalSearch from './GlobalSearch'
+import Tour from './Tour'
 import { useTranslation } from 'react-i18next'
 import { useTheme, THEME_LIST } from '../context/ThemeContext'
 import { useState, useRef, useEffect } from 'react'
@@ -21,6 +22,12 @@ export default function Layout() {
   const { t, i18n } = useTranslation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
+  const [tourOpen, setTourOpen] = useState(() => !localStorage.getItem('tour_seen'))
+
+  const handleTourClose = () => {
+    localStorage.setItem('tour_seen', '1')
+    setTourOpen(false)
+  }
   const personalRef = useRef(null)
   const themesRef = useRef(null)
 
@@ -94,7 +101,7 @@ export default function Layout() {
             </NavLink>
 
             {/* Buscador desktop */}
-            <div className="hidden md:flex flex-1 justify-center">
+            <div className="hidden md:flex flex-1 justify-center" data-tour="search">
               <GlobalSearch />
             </div>
 
@@ -106,6 +113,15 @@ export default function Layout() {
                 className="md:hidden bg-blue-700 dark:bg-gray-700 hover:bg-blue-600 px-3 py-1.5 rounded-lg text-sm transition"
               >
                 🔍
+              </button>
+
+              <button
+                onClick={() => setTourOpen(true)}
+                aria-label="Ayuda"
+                title="Ver guía de la app"
+                className="bg-blue-700 dark:bg-gray-700 hover:bg-blue-600 px-3 py-1.5 rounded-lg text-sm transition"
+              >
+                ❓
               </button>
 
               <button
@@ -304,6 +320,7 @@ export default function Layout() {
               onClick={() => setShowPersonal(s => !s)}
               aria-expanded={showPersonal}
               aria-haspopup="menu"
+              data-tour="personal"
               className={`px-4 py-2.5 text-sm font-medium transition border-b-2 whitespace-nowrap flex items-center gap-1 ${
                 isPersonalActive
                   ? 'border-yellow-400 text-yellow-300'
@@ -365,6 +382,7 @@ export default function Layout() {
         </div>
       </footer>
 
+      {tourOpen && <Tour onClose={handleTourClose} />}
     </div>
   )
 }

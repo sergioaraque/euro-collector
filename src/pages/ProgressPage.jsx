@@ -29,6 +29,7 @@ export default function ProgressPage() {
   const navigate = useNavigate()
   const [logs, setLogs] = useState([])
   const [loading, setLoading] = useState(true)
+  const [granularity, setGranularity] = useState('day')
 
 const TOTAL = ALL_COINS.length
   useEffect(() => {
@@ -44,24 +45,48 @@ const TOTAL = ALL_COINS.length
       })
   }, [user])
 
-  // Gráfica 1: crecimiento acumulado por día
+  // Gráfica 1: crecimiento acumulado (por día / semana / mes)
   const growthData = useMemo(() => {
     if (!logs.length) return []
     let total = 0
-    const byDay = {}
+    const byPeriod = {}
+
+    function getPeriodKey(dateStr) {
+      if (granularity === 'month') return dateStr.slice(0, 7)
+      if (granularity === 'week') {
+        const d = new Date(dateStr)
+        const day = d.getDay()
+        const monday = new Date(d)
+        monday.setDate(d.getDate() - (day === 0 ? 6 : day - 1))
+        return monday.toISOString().slice(0, 10)
+      }
+      return dateStr.slice(0, 10)
+    }
+
+    function formatPeriod(key) {
+      if (granularity === 'month') {
+        const [year, month] = key.split('-')
+        return new Date(year, month - 1, 1).toLocaleDateString('es', { month: 'short', year: '2-digit' })
+      }
+      return formatDate(key)
+    }
+
     for (const log of logs) {
       if (log.action === 'add') total++
       if (log.action === 'remove') total--
-      const day = log.created_at.slice(0, 10)
-      byDay[day] = total
+      const key = getPeriodKey(log.created_at)
+      byPeriod[key] = total
     }
-    return Object.entries(byDay).map(([date, count]) => ({
-      date,
-      label: formatDate(date),
-      count,
-      pct: Math.round((count / TOTAL) * 100)
-    }))
-  }, [logs])
+
+    return Object.entries(byPeriod)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, count]) => ({
+        date: key,
+        label: formatPeriod(key),
+        count,
+        pct: Math.round((count / TOTAL) * 100)
+      }))
+  }, [logs, granularity, TOTAL])
 
   // Gráfica 2: actividad por semana (añadidas - eliminadas)
   const weeklyData = useMemo(() => {
@@ -218,9 +243,30 @@ const TOTAL = ALL_COINS.length
 
       {/* Gráfica crecimiento */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-4 sm:p-6">
-        <h2 className="font-semibold text-gray-700 dark:text-gray-200 mb-4">
-          📊 Crecimiento de la colección
-        </h2>
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <h2 className="font-semibold text-gray-700 dark:text-gray-200">
+            📊 Crecimiento de la colección
+          </h2>
+          <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600 text-xs">
+            {[
+              { value: 'day',   label: 'Día' },
+              { value: 'week',  label: 'Semana' },
+              { value: 'month', label: 'Mes' },
+            ].map(({ value, label }) => (
+              <button
+                key={value}
+                onClick={() => setGranularity(value)}
+                className={`px-3 py-1.5 transition ${
+                  granularity === value
+                    ? 'bg-blue-700 text-white'
+                    : 'bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
         {growthData.length < 2 ? (
           <p className="text-sm text-gray-400 text-center py-8">Aún no hay suficientes datos — añade más monedas</p>
         ) : (
