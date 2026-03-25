@@ -2,13 +2,14 @@ import { useWallMessages } from '../hooks/useWallMessages'
 import WallMessage from '../components/WallMessage'
 import WallComposer from '../components/WallComposer'
 import { useAuth } from '../context/AuthContext'
+import { useAdmin } from '../hooks/useAdmin'
 import { useSEO } from '../hooks/useSEO'
 
 export default function CommunityPage() {
   useSEO({ title: 'Comunidad' })
   const { user } = useAuth()
   const { messages, loading, sendMessage } = useWallMessages()
-  const isAdmin = false // cambia a tu lógica de admin si la tienes
+  const isAdmin = useAdmin()
 
   return (
     <div className="max-w-2xl mx-auto space-y-4">

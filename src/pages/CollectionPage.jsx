@@ -21,10 +21,31 @@ export default function CollectionPage() {
   const [country, setCountry] = useState(searchParams.get('country') || '')
   const [filter, setFilter] = useState('all')
   const [rarity, setRarity] = useState('')
+  const [sort, setSort] = useState('')
   const [viewMode, setViewMode] = useState('grid')
+  const [collapsedCountries, setCollapsedCountries] = useState(new Set())
   const [showPropose, setShowPropose] = useState(false)
   const [showScanner, setShowScanner] = useState(false)
   const { t } = useTranslation()
+
+  const hasActiveFilters = search || country || filter !== 'all' || rarity || sort
+
+  const clearFilters = () => {
+    setSearch('')
+    setCountry('')
+    setFilter('all')
+    setRarity('')
+    setSort('')
+  }
+
+  const toggleCountryCollapse = (c) => {
+    setCollapsedCountries(prev => {
+      const next = new Set(prev)
+      if (next.has(c)) next.delete(c)
+      else next.add(c)
+      return next
+    })
+  }
 
   const filtered = useMemo(() => {
     return ALL_COINS.filter(coin => {
@@ -49,7 +70,27 @@ export default function CollectionPage() {
 
       return matchSearch && matchCountry && matchFilter && matchRarity
     })
-  }, [search, country, filter, rarity, owned])
+  }, [search, country, filter, rarity, owned, ALL_COINS])
+
+  const sorted = useMemo(() => {
+    if (!sort) return filtered
+    return [...filtered].sort((a, b) => {
+      if (sort === 'year-asc') return a.year - b.year
+      if (sort === 'year-desc') return b.year - a.year
+      if (sort === 'mintage-asc') {
+        const ma = a.mintage > 0 ? a.mintage : Infinity
+        const mb = b.mintage > 0 ? b.mintage : Infinity
+        return ma - mb
+      }
+      if (sort === 'mintage-desc') {
+        const ma = a.mintage > 0 ? a.mintage : -1
+        const mb = b.mintage > 0 ? b.mintage : -1
+        return mb - ma
+      }
+      if (sort === 'country') return a.country.localeCompare(b.country, 'es')
+      return 0
+    })
+  }, [filtered, sort])
 
   const countryProgress = useMemo(() => {
     return COUNTRIES.map(c => {
@@ -57,7 +98,20 @@ export default function CollectionPage() {
       const got = coins.filter(x => owned.has(x.id)).length
       return { country: c, total: coins.length, got, pct: Math.round((got / coins.length) * 100) }
     })
-  }, [owned])
+  }, [owned, ALL_COINS, COUNTRIES])
+
+  const countryGroups = useMemo(() => {
+    return COUNTRIES
+      .map(c => {
+        const coins = filtered.filter(coin => coin.country === c)
+        if (coins.length === 0) return null
+        const totalInCatalog = ALL_COINS.filter(coin => coin.country === c).length
+        const got = ALL_COINS.filter(coin => coin.country === c && owned.has(coin.id)).length
+        const pct = Math.round((got / totalInCatalog) * 100)
+        return { country: c, coins, total: totalInCatalog, got, pct }
+      })
+      .filter(Boolean)
+  }, [filtered, COUNTRIES, ALL_COINS, owned])
 
   return (
     <div>
@@ -95,6 +149,22 @@ export default function CollectionPage() {
           <option value="common">{t('common')} (&gt;1M)</option>
         </select>
 
+        {/* Ordenar */}
+        {viewMode !== 'country' && (
+          <select
+            value={sort}
+            onChange={e => setSort(e.target.value)}
+            className="border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="">Ordenar...</option>
+            <option value="year-asc">Año ↑</option>
+            <option value="year-desc">Año ↓</option>
+            <option value="mintage-asc">Más rara primero</option>
+            <option value="mintage-desc">Más común primero</option>
+            <option value="country">País A→Z</option>
+          </select>
+        )}
+
         {/* Tengo / Faltan */}
         <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600">
           {[
@@ -116,7 +186,7 @@ export default function CollectionPage() {
           ))}
         </div>
 
-        {/* Grid / Lista */}
+        {/* Vistas */}
         <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600">
           <button
             onClick={() => setViewMode('grid')}
@@ -140,10 +210,29 @@ export default function CollectionPage() {
           >
             ☰
           </button>
+          <button
+            onClick={() => setViewMode('country')}
+            title="Por país"
+            className={`px-3 py-2 text-sm transition ${
+              viewMode === 'country'
+                ? 'bg-blue-700 text-white'
+                : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            🌍
+          </button>
         </div>
 
-        <span className="text-sm text-gray-500 dark:text-gray-400">{filtered.length} {t('coins')}</span>
-        <div className="ml-auto flex gap-2">
+        <div className="flex items-center gap-2 ml-auto">
+          <span className="text-sm text-gray-500 dark:text-gray-400">{filtered.length} {t('coins')}</span>
+          {hasActiveFilters && (
+            <button
+              onClick={clearFilters}
+              className="text-xs text-gray-400 hover:text-red-500 transition px-2 py-1 rounded border border-gray-200 dark:border-gray-600"
+            >
+              ✕ Limpiar
+            </button>
+          )}
           <button
             onClick={() => setShowScanner(true)}
             className="text-xs bg-blue-700 hover:bg-blue-800 text-white font-semibold px-3 py-2 rounded-lg transition"
@@ -160,8 +249,8 @@ export default function CollectionPage() {
         </div>
       </div>
 
-      {/* Progreso por país */}
-      {!search && !country && filter === 'all' && rarity === '' && (
+      {/* Progreso por país — oculto en vista por país (ya se muestra inline) */}
+      {!search && !country && filter === 'all' && rarity === '' && viewMode !== 'country' && (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 mb-4">
           <h2 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-3">
             {t('countryProgress')}
@@ -207,9 +296,58 @@ export default function CollectionPage() {
             ¿La conoces? Proponla al catálogo →
           </button>
         </div>
+      ) : viewMode === 'country' ? (
+        <div className="space-y-3">
+          {countryGroups.map(({ country: c, coins, total, got, pct }) => {
+            const isCollapsed = collapsedCountries.has(c)
+            return (
+              <div key={c} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+                <button
+                  onClick={() => toggleCountryCollapse(c)}
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-left"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="font-semibold text-gray-800 dark:text-white text-sm">{c}</span>
+                      <span className="text-xs text-gray-400 shrink-0 ml-2">
+                        {got}/{total}
+                        {pct === 100 && <span className="ml-1.5 text-green-500">✓</span>}
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-100 dark:bg-gray-600 rounded-full h-1.5 overflow-hidden">
+                      <div
+                        className={`h-1.5 rounded-full transition-all duration-500 ${
+                          pct === 100 ? 'bg-green-500' :
+                          pct >= 50  ? 'bg-blue-500' :
+                          pct > 0    ? 'bg-yellow-400' : 'bg-gray-200 dark:bg-gray-500'
+                        }`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </div>
+                  <span className={`text-gray-400 text-xs transition-transform duration-200 shrink-0 ${isCollapsed ? '' : 'rotate-180'}`}>
+                    ▼
+                  </span>
+                </button>
+                {!isCollapsed && (
+                  <div className="px-4 pb-4 pt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 border-t border-gray-100 dark:border-gray-700">
+                    {coins.map(coin => (
+                      <CoinCard
+                        key={coin.id}
+                        coin={coin}
+                        isOwned={owned.has(coin.id)}
+                        onToggle={() => toggleCoin(coin.id)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {filtered.map(coin => (
+          {sorted.map(coin => (
             <CoinCard
               key={coin.id}
               coin={coin}
@@ -232,7 +370,7 @@ export default function CollectionPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50 dark:divide-gray-700">
-              {filtered.map(coin => (
+              {sorted.map(coin => (
                 <CoinRow
                   key={coin.id}
                   coin={coin}
@@ -244,6 +382,7 @@ export default function CollectionPage() {
           </table>
         </div>
       )}
+
       {/* Modal propuesta */}
       {showPropose && user && (
         <ProposeModal user={user} onClose={() => setShowPropose(false)} />
