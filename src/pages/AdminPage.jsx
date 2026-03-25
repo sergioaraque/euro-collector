@@ -84,17 +84,10 @@ export default function AdminPage() {
         </h1>
       </div>
       <button
-        onClick={() => navigate('/admin/imagenes')}
+        onClick={() => navigate('/admin/catalogo')}
         className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg text-sm transition"
       >
-        🖼️ Gestionar imágenes
-      </button>
-      
-      <button
-        onClick={() => navigate('/admin/propuestas')}
-        className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg text-sm transition"
-      >
-        🖼️ Gestionar propuestas
+        📦 Gestionar catálogo →
       </button>
 
       {/* Resumen */}

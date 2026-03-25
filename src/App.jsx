@@ -6,7 +6,6 @@ import { ThemeProvider } from './context/ThemeContext'
 import Layout from './components/Layout'
 import { ToastContainer } from './components/Toast'
 import PWABanner from './components/PWABanner'
-import AdminProposalsPage from './pages/AdminProposalsPage'
 import { useTranslation } from 'react-i18next'
 
 // Lazy imports — cada página se carga solo cuando se necesita
@@ -15,7 +14,7 @@ const RegisterPage      = lazy(() => import('./pages/RegisterPage'))
 const CollectionPage    = lazy(() => import('./pages/CollectionPage'))
 const StatsPage         = lazy(() => import('./pages/StatsPage'))
 const AdminPage         = lazy(() => import('./pages/AdminPage'))
-const AdminImagePage    = lazy(() => import('./pages/AdminImagePage'))
+const AdminCatalogPage  = lazy(() => import('./pages/AdminCatalogPage'))
 const MapPage           = lazy(() => import('./pages/MapPage'))
 const CoinDetailPage    = lazy(() => import('./pages/CoinDetailPage'))
 const ProfilePage       = lazy(() => import('./pages/ProfilePage'))
@@ -74,8 +73,7 @@ export default function App() {
                 <Route path="coleccion"      element={<CollectionPage />} />
                 <Route path="estadisticas"   element={<StatsPage />} />
                 <Route path="admin"          element={<AdminPage />} />
-                <Route path="/admin/imagenes" element={<AdminImagePage />} />
-                <Route path="/admin/propuestas" element={<AdminProposalsPage />} />
+                <Route path="/admin/catalogo" element={<AdminCatalogPage />} />
                 <Route path="mapa"           element={<MapPage />} />
                 <Route path="moneda/:coinId" element={<CoinDetailPage />} />
                 <Route path="perfil"         element={<ProfilePage />} />
