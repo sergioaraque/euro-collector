@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useCoins } from '../hooks/useCoins'
 import { useCollection } from '../context/CollectionContext'
@@ -24,9 +24,25 @@ export default function CollectionPage() {
   const [sort, setSort] = useState('')
   const [viewMode, setViewMode] = useState('grid')
   const [collapsedCountries, setCollapsedCountries] = useState(new Set())
+
+  const handleViewMode = (mode) => {
+    if (mode === 'country') {
+      const empty = new Set(
+        COUNTRIES.filter(c => !ALL_COINS.some(coin => coin.country === c && owned.has(coin.id)))
+      )
+      setCollapsedCountries(empty)
+    }
+    setViewMode(mode)
+  }
+  const [page, setPage] = useState(1)
   const [showPropose, setShowPropose] = useState(false)
   const [showScanner, setShowScanner] = useState(false)
   const { t } = useTranslation()
+
+  const PAGE_SIZE = 40
+
+  // Resetear página al cambiar cualquier filtro
+  useEffect(() => { setPage(1) }, [search, country, filter, rarity, sort])
 
   const hasActiveFilters = search || country || filter !== 'all' || rarity || sort
 
@@ -91,6 +107,9 @@ export default function CollectionPage() {
       return 0
     })
   }, [filtered, sort])
+
+  const paginated = sorted.slice(0, page * PAGE_SIZE)
+  const hasMore = sorted.length > paginated.length
 
   const countryProgress = useMemo(() => {
     return COUNTRIES.map(c => {
@@ -189,7 +208,7 @@ export default function CollectionPage() {
         {/* Vistas */}
         <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600">
           <button
-            onClick={() => setViewMode('grid')}
+            onClick={() => handleViewMode('grid')}
             title="Cuadrícula"
             className={`px-3 py-2 text-sm transition ${
               viewMode === 'grid'
@@ -200,7 +219,7 @@ export default function CollectionPage() {
             ⊞
           </button>
           <button
-            onClick={() => setViewMode('list')}
+            onClick={() => handleViewMode('list')}
             title="Lista"
             className={`px-3 py-2 text-sm transition ${
               viewMode === 'list'
@@ -211,7 +230,7 @@ export default function CollectionPage() {
             ☰
           </button>
           <button
-            onClick={() => setViewMode('country')}
+            onClick={() => handleViewMode('country')}
             title="Por país"
             className={`px-3 py-2 text-sm transition ${
               viewMode === 'country'
@@ -346,41 +365,65 @@ export default function CollectionPage() {
           })}
         </div>
       ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {sorted.map(coin => (
-            <CoinCard
-              key={coin.id}
-              coin={coin}
-              isOwned={owned.has(coin.id)}
-              onToggle={() => toggleCoin(coin.id)}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {paginated.map(coin => (
+              <CoinCard
+                key={coin.id}
+                coin={coin}
+                isOwned={owned.has(coin.id)}
+                onToggle={() => toggleCoin(coin.id)}
+              />
+            ))}
+          </div>
+          {hasMore && (
+            <div className="mt-6 text-center">
+              <button
+                onClick={() => setPage(p => p + 1)}
+                className="px-6 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition shadow-sm"
+              >
+                Cargar más · {sorted.length - paginated.length} restantes
+              </button>
+            </div>
+          )}
+        </>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-100 dark:border-gray-600">
-              <tr>
-                <th className="text-left px-4 py-3 text-gray-500 dark:text-gray-300 font-medium w-16">Imagen</th>
-                <th className="text-left px-4 py-3 text-gray-500 dark:text-gray-300 font-medium">País</th>
-                <th className="text-left px-4 py-3 text-gray-500 dark:text-gray-300 font-medium">Año</th>
-                <th className="text-left px-4 py-3 text-gray-500 dark:text-gray-300 font-medium hidden md:table-cell">Descripción</th>
-                <th className="text-left px-4 py-3 text-gray-500 dark:text-gray-300 font-medium hidden lg:table-cell">Acuñación</th>
-                <th className="text-center px-4 py-3 text-gray-500 dark:text-gray-300 font-medium">Tengo</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50 dark:divide-gray-700">
-              {sorted.map(coin => (
-                <CoinRow
-                  key={coin.id}
-                  coin={coin}
-                  isOwned={owned.has(coin.id)}
-                  onToggle={() => toggleCoin(coin.id)}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-100 dark:border-gray-600">
+                <tr>
+                  <th className="text-left px-4 py-3 text-gray-500 dark:text-gray-300 font-medium w-16">Imagen</th>
+                  <th className="text-left px-4 py-3 text-gray-500 dark:text-gray-300 font-medium">País</th>
+                  <th className="text-left px-4 py-3 text-gray-500 dark:text-gray-300 font-medium">Año</th>
+                  <th className="text-left px-4 py-3 text-gray-500 dark:text-gray-300 font-medium hidden md:table-cell">Descripción</th>
+                  <th className="text-left px-4 py-3 text-gray-500 dark:text-gray-300 font-medium hidden lg:table-cell">Acuñación</th>
+                  <th className="text-center px-4 py-3 text-gray-500 dark:text-gray-300 font-medium">Tengo</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50 dark:divide-gray-700">
+                {paginated.map(coin => (
+                  <CoinRow
+                    key={coin.id}
+                    coin={coin}
+                    isOwned={owned.has(coin.id)}
+                    onToggle={() => toggleCoin(coin.id)}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {hasMore && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => setPage(p => p + 1)}
+                className="px-6 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition shadow-sm"
+              >
+                Cargar más · {sorted.length - paginated.length} restantes
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {/* Modal propuesta */}
