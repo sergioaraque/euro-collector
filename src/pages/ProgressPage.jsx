@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
 import { useAuth } from '../context/AuthContext'
 import { useCollection } from '../context/CollectionContext'
@@ -21,10 +22,11 @@ function formatWeek(dateStr) {
 
 export default function ProgressPage() {
   
-  const { ALL_COINS, COUNTRIES}  = useCoins()
+  const { ALL_COINS, COUNTRIES } = useCoins()
   useSEO({ title: 'Mi progreso' })
   const { user } = useAuth()
   const { owned } = useCollection()
+  const navigate = useNavigate()
   const [logs, setLogs] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -158,6 +160,19 @@ const TOTAL = ALL_COINS.length
     }
     return { thisWeek, lastWeek, diff: thisWeek - lastWeek }
   }, [logs])
+
+  const countriesLeft = useMemo(() => {
+    return COUNTRIES
+      .map(c => {
+        const coins = ALL_COINS.filter(x => x.country === c)
+        const got = coins.filter(x => owned.has(x.id)).length
+        const missing = coins.length - got
+        const pct = Math.round((got / coins.length) * 100)
+        return { country: c, total: coins.length, got, missing, pct }
+      })
+      .filter(c => c.pct < 100)
+      .sort((a, b) => a.missing - b.missing)
+  }, [COUNTRIES, ALL_COINS, owned])
 
   const currentTotal = owned.size
   const currentPct = Math.round((currentTotal / TOTAL) * 100)
@@ -298,6 +313,50 @@ const TOTAL = ALL_COINS.length
           <span className="text-xs text-gray-400">Faltan {TOTAL - currentTotal} monedas</span>
         </div>
       </div>
+
+      {/* Países por completar */}
+      {countriesLeft.length > 0 && (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-semibold text-gray-700 dark:text-gray-200">🎯 Países por completar</h2>
+            <span className="text-xs text-gray-400">{countriesLeft.length} restantes</span>
+          </div>
+          <div className="space-y-3">
+            {countriesLeft.map(({ country, total, got, missing, pct }) => (
+              <button
+                key={country}
+                onClick={() => navigate(`/coleccion?country=${encodeURIComponent(country)}`)}
+                className="w-full text-left hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl p-2.5 transition group"
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
+                    {country}
+                  </span>
+                  <div className="flex items-center gap-2 shrink-0 ml-2">
+                    {missing <= 3 && (
+                      <span className="text-xs font-semibold text-orange-400">¡Casi!</span>
+                    )}
+                    <span className="text-xs text-gray-400">{got}/{total}</span>
+                    <span className="text-xs bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-300 rounded-full px-2 py-0.5 font-medium">
+                      faltan {missing}
+                    </span>
+                  </div>
+                </div>
+                <div className="w-full bg-gray-100 dark:bg-gray-600 rounded-full h-1.5 overflow-hidden">
+                  <div
+                    className={`h-1.5 rounded-full transition-all duration-500 ${
+                      pct >= 80 ? 'bg-orange-400' :
+                      pct >= 50 ? 'bg-blue-500' :
+                      pct > 0   ? 'bg-yellow-400' : 'bg-gray-200 dark:bg-gray-500'
+                    }`}
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

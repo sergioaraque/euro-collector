@@ -12,7 +12,7 @@ import CoinScanner from '../components/CoinScanner'
 
 export default function CollectionPage() {
   useSEO({ title: 'Mi colección' })
-  const { owned, toggleCoin } = useCollection()
+  const { owned, toggleCoin, extras } = useCollection()
   const { user } = useAuth()
   const [searchParams] = useSearchParams()
   const { ALL_COINS, COUNTRIES } = useCoins()
@@ -362,6 +362,7 @@ export default function CollectionPage() {
                         coin={coin}
                         isOwned={owned.has(coin.id)}
                         onToggle={() => toggleCoin(coin.id)}
+                        quantity={extras.get(coin.id) || 1}
                       />
                     ))}
                   </div>
@@ -379,6 +380,7 @@ export default function CollectionPage() {
                 coin={coin}
                 isOwned={owned.has(coin.id)}
                 onToggle={() => toggleCoin(coin.id)}
+                quantity={extras.get(coin.id) || 1}
               />
             ))}
           </div>

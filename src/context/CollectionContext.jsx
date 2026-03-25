@@ -16,6 +16,7 @@ export function CollectionProvider({ children }) {
 
   // Clave de caché única por usuario
   const queryKey = ['collection', user?.id]
+  const extrasKey = ['extras', user?.id]
 
   // Fetch con React Query — cachea 5 minutos, no refetch en cada navegación
   const { data: owned = new Set(), isLoading: loading } = useQuery({
@@ -29,8 +30,41 @@ export function CollectionProvider({ children }) {
       return new Set((data || []).map(r => r.coin_id))
     },
     enabled: !!user,
-    staleTime: 1000 * 60 * 5, // 5 minutos
+    staleTime: 1000 * 60 * 5,
   })
+
+  const { data: extras = new Map() } = useQuery({
+    queryKey: extrasKey,
+    queryFn: async () => {
+      if (!user) return new Map()
+      const { data } = await supabase
+        .from('coin_extras')
+        .select('coin_id, quantity')
+        .eq('user_id', user.id)
+      const map = new Map()
+      for (const row of data || []) map.set(row.coin_id, row.quantity)
+      return map
+    },
+    enabled: !!user,
+    staleTime: 1000 * 60 * 5,
+  })
+
+  const updateExtra = useCallback(async (coinId, quantity) => {
+    if (!user) return
+    const key = ['extras', user.id]
+    if (quantity < 2) {
+      await supabase.from('coin_extras').delete()
+        .eq('user_id', user.id).eq('coin_id', coinId)
+      queryClient.setQueryData(key, prev => {
+        const next = new Map(prev)
+        next.delete(coinId)
+        return next
+      })
+    } else {
+      await supabase.from('coin_extras').upsert({ user_id: user.id, coin_id: coinId, quantity })
+      queryClient.setQueryData(key, prev => new Map(prev).set(coinId, quantity))
+    }
+  }, [user, queryClient])
 
   const logActivity = async (action, coinId, country) => {
     try {
@@ -113,7 +147,7 @@ export function CollectionProvider({ children }) {
   }, [user, profile, owned, queryKey, queryClient])
 
   return (
-    <CollectionContext.Provider value={{ owned, loading, toggleCoin }}>
+    <CollectionContext.Provider value={{ owned, loading, toggleCoin, extras, updateExtra }}>
       {children}
     </CollectionContext.Provider>
   )

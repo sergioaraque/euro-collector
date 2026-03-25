@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useCoinImage } from '../hooks/useCoinImage'
 import { useTranslation } from 'react-i18next'
 
-export default function CoinCard({ coin, isOwned, onToggle, hasNote = false }) {
+export default function CoinCard({ coin, isOwned, onToggle, hasNote = false, quantity = 1 }) {
   const { src, status } = useCoinImage(coin)
   const navigate = useNavigate()
   const { t } = useTranslation()
@@ -42,6 +42,11 @@ export default function CoinCard({ coin, isOwned, onToggle, hasNote = false }) {
         {isOwned && (
           <span className="absolute top-1 right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold shadow">
             ✓
+          </span>
+        )}
+        {quantity > 1 && (
+          <span className="absolute bottom-1 right-1 bg-blue-600 text-white font-bold shadow rounded-full px-1.5 py-0.5 leading-none" style={{ fontSize: 10 }}>
+            ×{quantity}
           </span>
         )}
         {hasNote && (

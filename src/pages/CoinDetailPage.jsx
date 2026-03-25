@@ -6,11 +6,12 @@ import { useCoinImage } from '../hooks/useCoinImage'
 import { useCoinNote } from '../hooks/useCoinNote'
 import { useTranslation } from 'react-i18next'
 import { useSEO } from '../hooks/useSEO'
+import { supabase } from '../supabase'
 
 export default function CoinDetailPage() {
   const { coinId } = useParams()
   const navigate = useNavigate()
-  const { owned, toggleCoin } = useCollection()
+  const { owned, toggleCoin, extras, updateExtra } = useCollection()
   const { ALL_COINS, COUNTRIES, loading } = useCoins()
   const coin = ALL_COINS.find(c => c.id === coinId)
   const { src, status } = useCoinImage(coin || {})
@@ -19,12 +20,24 @@ export default function CoinDetailPage() {
   const [editingNote, setEditingNote] = useState(false)
   const [noteInput, setNoteInput] = useState('')
   const [showImageModal, setShowImageModal] = useState(false)
+  const [ownerCount, setOwnerCount] = useState(null)
 
   useSEO({ title: coin?.description || 'Detalle de moneda' })
 
   useEffect(() => {
     window.scrollTo(0, 0)
+    setOwnerCount(null)
   }, [coinId])
+
+  useEffect(() => {
+    if (!coin) return
+    supabase
+      .from('global_coin_stats')
+      .select('owner_count')
+      .eq('coin_id', coin.id)
+      .maybeSingle()
+      .then(({ data }) => setOwnerCount(data?.owner_count ?? 0))
+  }, [coin?.id])
 
   if (loading) return (
     <div className="text-center py-20 text-gray-400">Cargando...</div>
@@ -40,6 +53,8 @@ export default function CoinDetailPage() {
   )
 
   const isOwned = owned.has(coin.id)
+  const quantity = extras.get(coin.id) || 1
+
   const countryCoins = ALL_COINS
     .filter(c => c.country === coin.country)
     .sort((a, b) => a.year - b.year)
@@ -146,16 +161,36 @@ export default function CoinDetailPage() {
               </h1>
               <p className="text-gray-600 dark:text-gray-300 mt-1">{coin.description}</p>
             </div>
-            <button
-              onClick={() => toggleCoin(coin.id)}
-              className={`shrink-0 px-4 py-2 rounded-xl font-medium text-sm transition ${
-                isOwned
-                  ? 'bg-green-500 text-white hover:bg-red-400'
-                  : 'bg-blue-700 text-white hover:bg-blue-800'
-              }`}
-            >
-              {isOwned ? t('inCollection') : '+ ' + t('addCoin')}
-            </button>
+            <div className="flex flex-col items-end gap-2 shrink-0">
+              <button
+                onClick={() => toggleCoin(coin.id)}
+                className={`px-4 py-2 rounded-xl font-medium text-sm transition ${
+                  isOwned
+                    ? 'bg-green-500 text-white hover:bg-red-400'
+                    : 'bg-blue-700 text-white hover:bg-blue-800'
+                }`}
+              >
+                {isOwned ? t('inCollection') : '+ ' + t('addCoin')}
+              </button>
+              {isOwned && (
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-gray-400">Copias:</span>
+                  <button
+                    onClick={() => updateExtra(coin.id, quantity - 1)}
+                    disabled={quantity <= 1}
+                    className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold transition flex items-center justify-center"
+                  >−</button>
+                  <span className="w-5 text-center text-sm font-bold text-gray-800 dark:text-white">{quantity}</span>
+                  <button
+                    onClick={() => updateExtra(coin.id, quantity + 1)}
+                    className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 text-sm font-bold transition flex items-center justify-center"
+                  >+</button>
+                  {quantity > 1 && (
+                    <span className="text-xs text-blue-500 font-medium">{quantity - 1} extra{quantity - 1 > 1 ? 's' : ''}</span>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Detalles */}
@@ -184,6 +219,18 @@ export default function CoinDetailPage() {
                 {coin.year}
               </p>
             </div>
+          </div>
+
+          {/* Coleccionistas */}
+          <div>
+            <p className="text-xs text-gray-400 uppercase tracking-wide">Coleccionistas</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mt-0.5">
+              {ownerCount === null
+                ? <span className="text-gray-300 dark:text-gray-600">—</span>
+                : ownerCount === 0
+                  ? 'Ninguno aún'
+                  : `${ownerCount} la tienen`}
+            </p>
           </div>
 
           {/* Valor estimado */}
