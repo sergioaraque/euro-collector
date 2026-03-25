@@ -21,6 +21,7 @@ export default function CoinRow({ coin, isOwned, onToggle }) {
             <img
               src={src}
               alt={coin.description}
+              loading="lazy"
               className={`w-10 h-10 object-contain transition-opacity ${
                 status === 'ok' ? 'opacity-100' : 'opacity-0'
               }`}

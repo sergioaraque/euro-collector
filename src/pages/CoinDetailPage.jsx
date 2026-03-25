@@ -26,6 +26,10 @@ export default function CoinDetailPage() {
     window.scrollTo(0, 0)
   }, [coinId])
 
+  if (loading) return (
+    <div className="text-center py-20 text-gray-400">Cargando...</div>
+  )
+
   if (!coin) return (
     <div className="text-center py-20">
       <p className="text-gray-400">{t('coinNotFound')}</p>
@@ -36,8 +40,13 @@ export default function CoinDetailPage() {
   )
 
   const isOwned = owned.has(coin.id)
-  const sameCountry = ALL_COINS.filter(c => c.country === coin.country && c.id !== coin.id)
+  const countryCoins = ALL_COINS
+    .filter(c => c.country === coin.country)
     .sort((a, b) => a.year - b.year)
+  const currentIndex = countryCoins.findIndex(c => c.id === coin.id)
+  const prevCoin = currentIndex > 0 ? countryCoins[currentIndex - 1] : null
+  const nextCoin = currentIndex < countryCoins.length - 1 ? countryCoins[currentIndex + 1] : null
+  const sameCountry = countryCoins.filter(c => c.id !== coin.id)
   const sameYear = ALL_COINS.filter(c => c.year === coin.year && c.id !== coin.id)
 
   const handleEditNote = () => {
@@ -82,13 +91,34 @@ export default function CoinDetailPage() {
         </div>
       )}
       
-      {/* Botón volver */}
-      <button
-        onClick={() => navigate(-1)}
-        className="text-blue-600 dark:text-blue-400 hover:underline text-sm flex items-center gap-1"
-      >
-        {t('backToCollection')}
-      </button>
+      {/* Navegación */}
+      <div className="flex items-center justify-between gap-2">
+        <button
+          onClick={() => navigate(-1)}
+          className="text-blue-600 dark:text-blue-400 hover:underline text-sm flex items-center gap-1"
+        >
+          {t('backToCollection')}
+        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => prevCoin && navigate(`/moneda/${prevCoin.id}`)}
+            disabled={!prevCoin}
+            className="px-2.5 py-1.5 rounded-lg text-sm border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition"
+            title={prevCoin ? `${prevCoin.year} — ${prevCoin.description}` : ''}
+          >
+            ← {prevCoin?.year ?? ''}
+          </button>
+          <span className="text-xs text-gray-400">{currentIndex + 1}/{countryCoins.length}</span>
+          <button
+            onClick={() => nextCoin && navigate(`/moneda/${nextCoin.id}`)}
+            disabled={!nextCoin}
+            className="px-2.5 py-1.5 rounded-lg text-sm border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition"
+            title={nextCoin ? `${nextCoin.year} — ${nextCoin.description}` : ''}
+          >
+            {nextCoin?.year ?? ''} →
+          </button>
+        </div>
+      </div>
 
       {/* Card principal */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">

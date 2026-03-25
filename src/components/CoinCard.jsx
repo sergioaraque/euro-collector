@@ -32,6 +32,7 @@ export default function CoinCard({ coin, isOwned, onToggle, hasNote = false }) {
             <img
               src={src}
               alt={coin.description}
+              loading="lazy"
               className={`h-24 w-24 object-contain transition-opacity duration-300 ${
                 status === 'ok' ? 'opacity-100' : 'opacity-0'
               }`}

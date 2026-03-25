@@ -285,12 +285,16 @@ export default function CollectionPage() {
                   <span className="text-xs font-medium text-gray-700 dark:text-gray-200 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition truncate">
                     {c}
                   </span>
-                  <span className="text-xs text-gray-400 ml-2 shrink-0">{got}/{total}</span>
+                  <span className="text-xs text-gray-400 ml-2 shrink-0 flex items-center gap-1">
+                    {pct >= 80 && pct < 100 && <span className="text-orange-400 font-semibold">¡Casi!</span>}
+                    {got}/{total}
+                  </span>
                 </div>
                 <div className="w-full bg-gray-100 dark:bg-gray-600 rounded-full h-1.5 overflow-hidden">
                   <div
                     className={`h-1.5 rounded-full transition-all duration-500 ${
                       pct === 100 ? 'bg-green-500' :
+                      pct >= 80  ? 'bg-orange-400' :
                       pct >= 50  ? 'bg-blue-500' :
                       pct > 0    ? 'bg-yellow-400' : 'bg-gray-200'
                     }`}
@@ -328,15 +332,17 @@ export default function CollectionPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="font-semibold text-gray-800 dark:text-white text-sm">{c}</span>
-                      <span className="text-xs text-gray-400 shrink-0 ml-2">
+                      <span className="text-xs text-gray-400 shrink-0 ml-2 flex items-center gap-1">
+                        {pct >= 80 && pct < 100 && <span className="text-orange-400 font-semibold">¡Casi!</span>}
                         {got}/{total}
-                        {pct === 100 && <span className="ml-1.5 text-green-500">✓</span>}
+                        {pct === 100 && <span className="ml-0.5 text-green-500">✓</span>}
                       </span>
                     </div>
                     <div className="w-full bg-gray-100 dark:bg-gray-600 rounded-full h-1.5 overflow-hidden">
                       <div
                         className={`h-1.5 rounded-full transition-all duration-500 ${
                           pct === 100 ? 'bg-green-500' :
+                          pct >= 80  ? 'bg-orange-400' :
                           pct >= 50  ? 'bg-blue-500' :
                           pct > 0    ? 'bg-yellow-400' : 'bg-gray-200 dark:bg-gray-500'
                         }`}

@@ -1,8 +1,46 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { useCollection } from '../context/CollectionContext'
+import { useCoins } from '../hooks/useCoins'
 import { loadUserBadges } from '../lib/badges'
 import { useTranslation } from 'react-i18next'
 import { useSEO } from '../hooks/useSEO'
+
+function getBadgeProgress(badgeId, owned, allCoins) {
+  const ownedCount = owned.size
+  const countries = [...new Set(allCoins.map(c => c.country))]
+  const completedCountries = countries.filter(country =>
+    allCoins.filter(c => c.country === country).every(c => owned.has(c.id))
+  ).length
+  const ownedRare = allCoins.filter(c => owned.has(c.id) && c.mintage > 0 && c.mintage < 100000).length
+  const allYears = [...new Set(allCoins.map(c => c.year))]
+  const coveredYears = allYears.filter(year => allCoins.some(c => c.year === year && owned.has(c.id))).length
+  const coinsOf = (country) => allCoins.filter(c => c.country === country)
+  const ownedOf = (country) => coinsOf(country).filter(c => owned.has(c.id)).length
+
+  const map = {
+    first_coin:        { current: ownedCount, target: 1 },
+    coins_10:          { current: ownedCount, target: 10 },
+    coins_25:          { current: ownedCount, target: 25 },
+    coins_50:          { current: ownedCount, target: 50 },
+    coins_100:         { current: ownedCount, target: 100 },
+    coins_200:         { current: ownedCount, target: 200 },
+    coins_all:         { current: ownedCount, target: allCoins.length },
+    half_collection:   { current: ownedCount, target: Math.floor(allCoins.length / 2) },
+    first_country:     { current: completedCountries, target: 1 },
+    countries_5:       { current: completedCountries, target: 5 },
+    countries_10:      { current: completedCountries, target: 10 },
+    countries_all:     { current: completedCountries, target: countries.length },
+    spain_complete:    { current: ownedOf('España'),   target: coinsOf('España').length },
+    germany_complete:  { current: ownedOf('Alemania'), target: coinsOf('Alemania').length },
+    vaticano_complete: { current: ownedOf('Vaticano'), target: coinsOf('Vaticano').length },
+    monaco_complete:   { current: ownedOf('Mónaco'),   target: coinsOf('Mónaco').length },
+    rare_coin:         { current: ownedRare, target: 1 },
+    rare_5:            { current: ownedRare, target: 5 },
+    all_years:         { current: coveredYears, target: allYears.length },
+  }
+  return map[badgeId] || null
+}
 
 const CATEGORY_LABELS = {
   collection: '🪙 Colección',
@@ -14,6 +52,8 @@ export default function BadgesPage() {
   useSEO({ title: 'Insignias y logros' })
   const { user } = useAuth()
   const { t } = useTranslation()
+  const { owned } = useCollection()
+  const { ALL_COINS } = useCoins()
   const [badges, setBadges] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -82,7 +122,7 @@ export default function BadgesPage() {
                 >
                   <div className="flex items-start gap-3">
                     <span className="text-3xl shrink-0">{badge.icon}</span>
-                    <div className="min-w-0">
+                    <div className="min-w-0 w-full">
                       <p className="font-semibold text-gray-800 dark:text-white text-sm leading-tight">
                         {badge.name}
                       </p>
@@ -94,6 +134,25 @@ export default function BadgesPage() {
                           ✓ {new Date(badge.earned_at).toLocaleDateString('es')}
                         </p>
                       )}
+                      {!badge.earned && (() => {
+                        const progress = getBadgeProgress(badge.id, owned, ALL_COINS)
+                        if (!progress || progress.current === 0) return null
+                        const pct = Math.min(100, Math.round((progress.current / progress.target) * 100))
+                        return (
+                          <div className="mt-2">
+                            <div className="flex justify-between text-xs text-gray-400 mb-1">
+                              <span>{progress.current}/{progress.target}</span>
+                              <span>{pct}%</span>
+                            </div>
+                            <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                              <div
+                                className="h-1.5 rounded-full bg-blue-400 transition-all duration-500"
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+                          </div>
+                        )
+                      })()}
                     </div>
                   </div>
                 </div>

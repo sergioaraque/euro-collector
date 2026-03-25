@@ -5,12 +5,12 @@ const resources = {
   es: {
     translation: {
         // Nav
-        map: '🗺️ Mapa',
-        collection: '📋 Colección',
+        map: 'Mapa',
+        collection: 'Colección',
         stats: 'Estadísticas',
         activity: 'Actividad',
         badges: 'Insignias',
-        ranking: '🏆 Ranking',
+        ranking: 'Ranking',
         admin: 'Admin',
         logout: 'Salir',
         // Colección
@@ -92,12 +92,12 @@ const resources = {
   },
   en: {
     translation: {
-        map: '🗺️ Map',
-        collection: '📋 Collection',
+        map: 'Map',
+        collection: 'Collection',
         stats: 'Statistics',
         activity: 'Activity',
         badges: 'Badges',
-        ranking: '🏆 Ranking',
+        ranking: 'Ranking',
         admin: 'Admin',
         logout: 'Sign out',
         searchPlaceholder: 'Search coin, country, year...',

@@ -56,29 +56,22 @@ export default function Layout() {
   const isPersonalActive = personalRoutes.some(r => location.pathname.startsWith(r))
 
   const personalLinks = [
-    { to: '/progreso',   label: '📈 ' + 'Progreso' },
-    { to: '/actividad',  label: '📋 ' + t('activity') },
+    { to: '/progreso',   label: '📈 Progreso' },
     { to: '/insignias',  label: '🏅 ' + t('badges') },
+    { to: '/actividad',  label: '📋 ' + t('activity') },
     { to: '/perfil',     label: '👤 Perfil' },
   ]
 
   const mainLinks = [
-    { to: '/mapa',         label: t('map') },
-    { to: '/coleccion',    label: t('collection') },
+    { to: '/mapa',         label: '🗺️ ' + t('map') },
+    { to: '/coleccion',    label: '📦 ' + t('collection') },
     { to: '/estadisticas', label: '📊 ' + t('stats') },
   ]
 
   const rightLinks = [
-    { to: '/ranking',   label: t('ranking') },
+    { to: '/ranking',   label: '🏆 ' + t('ranking') },
     { to: '/comunidad', label: '💬 Comunidad' },
     ...(isAdmin ? [{ to: '/admin', label: '🛡️ ' + t('admin') }] : []),
-  ]
-
-  // Todos los links para el menú móvil
-  const allMobileLinks = [
-    ...mainLinks,
-    ...rightLinks,
-    ...personalLinks,
   ]
 
   return (
@@ -195,7 +188,9 @@ export default function Layout() {
           {/* Menú móvil */}
           {mobileMenuOpen && (
             <div className="mt-3 sm:hidden border-t border-blue-700 dark:border-gray-600 pt-3 space-y-1">
-              {allMobileLinks.map(({ to, label }) => (
+
+              <p className="px-3 pb-1 text-xs text-blue-300/60 uppercase tracking-wide font-medium">Mi colección</p>
+              {mainLinks.map(({ to, label }) => (
                 <NavLink
                   key={to}
                   to={to}
@@ -211,19 +206,49 @@ export default function Layout() {
                   {label}
                 </NavLink>
               ))}
-              <div className="border-t border-blue-700 dark:border-gray-600 pt-2 mt-2">
+
+              <p className="px-3 pt-3 pb-1 text-xs text-blue-300/60 uppercase tracking-wide font-medium">Social</p>
+              {rightLinks.map(({ to, label }) => (
                 <NavLink
-                  to="/perfil"
+                  key={to}
+                  to={to}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-3 py-2 rounded-lg text-sm text-blue-200 hover:bg-blue-700 hover:text-white transition"
+                  className={({ isActive }) =>
+                    `block px-3 py-2 rounded-lg text-sm transition ${
+                      isActive
+                        ? 'bg-yellow-400/20 text-yellow-300 font-medium'
+                        : 'text-blue-200 hover:bg-blue-700 hover:text-white'
+                    }`
+                  }
                 >
-                  👤 {user?.email}
+                  {label}
                 </NavLink>
+              ))}
+
+              <p className="px-3 pt-3 pb-1 text-xs text-blue-300/60 uppercase tracking-wide font-medium">Personal</p>
+              {personalLinks.map(({ to, label }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `block px-3 py-2 rounded-lg text-sm transition ${
+                      isActive
+                        ? 'bg-yellow-400/20 text-yellow-300 font-medium'
+                        : 'text-blue-200 hover:bg-blue-700 hover:text-white'
+                    }`
+                  }
+                >
+                  {label}
+                </NavLink>
+              ))}
+
+              <div className="border-t border-blue-700 dark:border-gray-600 pt-2 mt-2">
                 <button
                   onClick={() => { handleSignOut(); setMobileMenuOpen(false) }}
                   className="w-full text-left px-3 py-2 rounded-lg text-sm text-blue-200 hover:bg-blue-700 hover:text-white transition"
                 >
-                  🚪 {t('logout')}
+                  🚪 {t('logout')} · {user?.email}
                 </button>
               </div>
             </div>
@@ -235,7 +260,7 @@ export default function Layout() {
       <nav className="themed text-white shadow-sm transition-colors hidden sm:block">
         <div className="max-w-6xl mx-auto px-4 flex items-center gap-1">
 
-          {/* Links principales */}
+          {/* Mi colección */}
           {mainLinks.map(({ to, label }) => (
             <NavLink
               key={to}
@@ -252,9 +277,9 @@ export default function Layout() {
             </NavLink>
           ))}
 
+          <div className="w-px self-stretch my-2 bg-white/20 dark:bg-gray-600/50 mx-1" />
 
-
-          {/* Links derechos */}
+          {/* Social */}
           {rightLinks.map(({ to, label }) => (
             <NavLink
               key={to}
@@ -271,7 +296,9 @@ export default function Layout() {
             </NavLink>
           ))}
 
-                    {/* Dropdown "Personal" */}
+          <div className="w-px self-stretch my-2 bg-white/20 dark:bg-gray-600/50 mx-1" />
+
+          {/* Dropdown "Personal" */}
           <div className="relative" ref={personalRef}>
             <button
               onClick={() => setShowPersonal(s => !s)}
