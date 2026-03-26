@@ -1,25 +1,19 @@
 import { useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useCoins } from '../hooks/useCoins'
 import { useCollection } from '../context/CollectionContext'
 import { useSEO } from '../hooks/useSEO'
+import { getEstimatedValue, getCoinTier, VALUE_TIERS, formatValue } from '../lib/coinValue'
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   LineChart, Line, CartesianGrid, Legend, PieChart, Pie, Cell
 } from 'recharts'
 
-function getEstimatedValue(coin) {
-  if (!coin.mintage || coin.mintage === 0) return 3
-  if (coin.mintage < 50000)  return 100
-  if (coin.mintage < 100000) return 40
-  if (coin.mintage < 500000) return 12
-  if (coin.mintage < 2000000) return 5
-  return 3
-}
-
 export default function StatsPage() {
   useSEO({ title: 'Estadísticas' })
   const { ALL_COINS, COUNTRIES, loading } = useCoins()
   const { owned } = useCollection()
+  const navigate = useNavigate()
 
   const total = ALL_COINS.length
   const ownedCount = owned.size
@@ -28,9 +22,20 @@ export default function StatsPage() {
   const ownedCoins = useMemo(() =>
     ALL_COINS.filter(c => owned.has(c.id)), [owned])
 
-  // Valor estimado total
+  // Valor estimado total (monedas propias)
   const totalValue = useMemo(() =>
     ownedCoins.reduce((sum, c) => sum + getEstimatedValue(c), 0), [ownedCoins])
+
+  // Valor potencial si tuvieras todo el catálogo
+  const potentialValue = useMemo(() =>
+    ALL_COINS.reduce((sum, c) => sum + getEstimatedValue(c), 0), [ALL_COINS])
+
+  // Top 5 monedas más valiosas de tu colección
+  const topCoins = useMemo(() =>
+    [...ownedCoins]
+      .sort((a, b) => getEstimatedValue(b) - getEstimatedValue(a))
+      .slice(0, 5),
+  [ownedCoins])
 
   // Moneda más rara que tienes
   const rarestCoin = useMemo(() =>
@@ -39,12 +44,29 @@ export default function StatsPage() {
       (curr.mintage > 0 && (prev.mintage === 0 || curr.mintage < prev.mintage)) ? curr : prev
     ), [ownedCoins])
 
-  // Distribución por rareza
-  const rarityData = useMemo(() => [
-    { name: '💎 Raras (<100k)',   value: ownedCoins.filter(c => c.mintage > 0 && c.mintage < 100000).length },
-    { name: '🔵 Medias (100k-1M)', value: ownedCoins.filter(c => c.mintage >= 100000 && c.mintage < 1000000).length },
-    { name: '⚪ Comunes (>1M)',    value: ownedCoins.filter(c => c.mintage >= 1000000).length },
-  ], [ownedCoins])
+  // Distribución por rareza (usando VALUE_TIERS)
+  const rarityData = useMemo(() =>
+    VALUE_TIERS.slice(0, 4).map(tier => ({
+      name: `${tier.icon} ${tier.label}`,
+      value: ownedCoins.filter(c => {
+        const t = getCoinTier(c)
+        return t.label === tier.label
+      }).length,
+      fill: tier.icon === '💎' ? '#7c3aed' : tier.icon === '🔵' ? '#3b82f6' : tier.icon === '🟢' ? '#14b8a6' : '#9ca3af',
+    })),
+  [ownedCoins])
+
+  // Distribución por rareza — valor acumulado por tier
+  const valueByTier = useMemo(() =>
+    VALUE_TIERS.slice(0, 4).map(tier => {
+      const coins = ownedCoins.filter(c => getCoinTier(c).label === tier.label)
+      return {
+        ...tier,
+        count: coins.length,
+        value: coins.reduce((s, c) => s + getEstimatedValue(c), 0),
+      }
+    }),
+  [ownedCoins])
 
   const byCountry = useMemo(() =>
     COUNTRIES.map(c => {
@@ -69,7 +91,6 @@ export default function StatsPage() {
     { name: 'Faltan', value: total - ownedCount },
   ]
 
-  const RARITY_COLORS = ['#7c3aed', '#3b82f6', '#9ca3af']
 
   return (
     <div className="space-y-6">
@@ -90,36 +111,108 @@ export default function StatsPage() {
         ))}
       </div>
 
-      {/* Valor estimado + moneda más rara */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 flex items-center gap-4">
-          <span className="text-4xl">💰</span>
-          <div>
-            <p className="text-xs text-gray-400 uppercase tracking-wide">Valor estimado total</p>
-            <p className="text-3xl font-bold text-yellow-500 mt-0.5">{totalValue.toLocaleString('es')}€</p>
-            <p className="text-xs text-gray-400 mt-1">Basado en acuñación de cada moneda</p>
+      {/* Valor estimado — cabecera */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5">
+        <h2 className="font-semibold text-gray-700 dark:text-gray-200 mb-4">💰 Valor estimado de tu colección</h2>
+
+        {/* Cifras principales */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-5">
+          <div className="text-center">
+            <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Tu colección vale</p>
+            <p className="text-3xl font-bold text-yellow-500">~{Math.round(totalValue).toLocaleString('es')}€</p>
+            <p className="text-xs text-gray-400 mt-1">{ownedCoins.length} monedas</p>
+          </div>
+          <div className="text-center">
+            <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Catálogo completo</p>
+            <p className="text-3xl font-bold text-gray-300 dark:text-gray-600">~{Math.round(potentialValue).toLocaleString('es')}€</p>
+            <p className="text-xs text-gray-400 mt-1">si tuvieras todo</p>
+          </div>
+          <div className="col-span-2 md:col-span-1 text-center">
+            <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">% del valor total</p>
+            <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+              {potentialValue > 0 ? Math.round((totalValue / potentialValue) * 100) : 0}%
+            </p>
+            <p className="text-xs text-gray-400 mt-1">del valor posible</p>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 flex items-center gap-4">
-          <span className="text-4xl">💎</span>
-          <div className="min-w-0">
-            <p className="text-xs text-gray-400 uppercase tracking-wide">Tu moneda más rara</p>
-            {rarestCoin ? (
-              <>
-                <p className="text-lg font-bold text-purple-600 dark:text-purple-400 mt-0.5 truncate">
-                  {rarestCoin.country} {rarestCoin.year}
-                </p>
-                <p className="text-xs text-gray-400 truncate">{rarestCoin.description}</p>
-                <p className="text-xs text-purple-500 mt-0.5">
-                  {rarestCoin.mintage.toLocaleString('es')} uds. acuñadas
-                </p>
-              </>
-            ) : (
-              <p className="text-sm text-gray-400 mt-1">Aún no tienes monedas</p>
-            )}
+        {/* Barra de progreso de valor */}
+        <div className="mb-5">
+          <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+            <div
+              className="h-3 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-600 transition-all duration-700"
+              style={{ width: `${potentialValue > 0 ? (totalValue / potentialValue) * 100 : 0}%` }}
+            />
           </div>
+          <p className="text-xs text-gray-400 mt-1 text-right">
+            {Math.round(totalValue).toLocaleString('es')}€ de ~{Math.round(potentialValue).toLocaleString('es')}€
+          </p>
         </div>
+
+        {/* Desglose por tier de rareza */}
+        <div className="space-y-2 mb-5">
+          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Desglose por rareza</p>
+          {valueByTier.map(tier => (
+            <div key={tier.label} className="flex items-center gap-3">
+              <span className="text-base w-5 shrink-0 text-center">{tier.icon}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between text-xs mb-0.5">
+                  <span className={tier.color}>{tier.label}</span>
+                  <span className="text-gray-400">{tier.count} monedas · ~{Math.round(tier.value).toLocaleString('es')}€</span>
+                </div>
+                <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                  <div
+                    className="h-1.5 rounded-full transition-all duration-500"
+                    style={{
+                      width: `${totalValue > 0 ? (tier.value / totalValue) * 100 : 0}%`,
+                      backgroundColor: tier.icon === '💎' ? '#7c3aed' : tier.icon === '🔵' ? '#3b82f6' : tier.icon === '🟢' ? '#14b8a6' : '#9ca3af',
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Top 5 más valiosas */}
+        {topCoins.length > 0 && (
+          <div>
+            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+              Tus 5 monedas más valiosas
+            </p>
+            <div className="space-y-1.5">
+              {topCoins.map((coin, i) => {
+                const tier = getCoinTier(coin)
+                return (
+                  <button
+                    key={coin.id}
+                    onClick={() => navigate(`/moneda/${coin.id}`)}
+                    className="w-full flex items-center gap-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg px-2 py-1.5 transition group"
+                  >
+                    <span className="text-xs font-bold text-gray-300 dark:text-gray-600 w-4">#{i + 1}</span>
+                    <span className="text-sm">{tier.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
+                        {coin.country} · {coin.year}
+                      </p>
+                      <p className="text-xs text-gray-400 truncate">{coin.description}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className={`text-sm font-bold ${tier.color}`}>~{formatValue(getEstimatedValue(coin))}</p>
+                      {coin.mintage > 0 && (
+                        <p className="text-xs text-gray-400">{coin.mintage.toLocaleString('es')} ud.</p>
+                      )}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        <p className="text-xs text-gray-300 dark:text-gray-600 mt-4 text-center">
+          * Estimación orientativa basada en acuñación. Los precios reales varían según estado y mercado.
+        </p>
       </div>
 
       {/* Barra progreso */}
@@ -170,15 +263,14 @@ export default function StatsPage() {
           <div className="flex items-center justify-center">
             <PieChart width={180} height={180}>
               <Pie data={rarityData} cx={90} cy={90} innerRadius={50} outerRadius={85} dataKey="value">
-                {rarityData.map((_, i) => <Cell key={i} fill={RARITY_COLORS[i]} />)}
+                {rarityData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
               </Pie>
               <Tooltip />
             </PieChart>
             <div className="ml-4 space-y-2">
-              {rarityData.map(({ name, value }, i) => (
+              {rarityData.map(({ name, value, fill }) => (
                 <div key={name} className="flex items-center gap-2 text-xs">
-                  <span className="w-3 h-3 rounded-full inline-block shrink-0"
-                    style={{ backgroundColor: RARITY_COLORS[i] }} />
+                  <span className="w-3 h-3 rounded-full inline-block shrink-0" style={{ backgroundColor: fill }} />
                   <span className="dark:text-gray-300">{name}: {value}</span>
                 </div>
               ))}

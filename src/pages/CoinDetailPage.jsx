@@ -7,6 +7,7 @@ import { useCoinNote } from '../hooks/useCoinNote'
 import { useTranslation } from 'react-i18next'
 import { useSEO } from '../hooks/useSEO'
 import { supabase } from '../supabase'
+import { getCoinTier, formatValue, getEstimatedValue } from '../lib/coinValue'
 
 export default function CoinDetailPage() {
   const { coinId } = useParams()
@@ -234,24 +235,30 @@ export default function CoinDetailPage() {
           </div>
 
           {/* Valor estimado */}
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-3 flex items-center gap-3">
-            <span className="text-2xl">💰</span>
-            <div>
-              <p className="text-xs text-yellow-700 dark:text-yellow-400 font-medium">
-                {t('estimatedMarketValue')}
-              </p>
-              <p className="text-lg font-bold text-yellow-700 dark:text-yellow-300">
-                {coin.mintage === 0 ? '—' :
-                 coin.mintage < 100000 ? '20€ - 200€' :
-                 coin.mintage < 500000 ? '5€ - 20€' :
-                 coin.mintage < 2000000 ? '3€ - 8€' :
-                 '2€ - 4€'}
-              </p>
-              <p className="text-xs text-yellow-600 dark:text-yellow-500 mt-0.5">
-                {t('mintageEstimation')}
-              </p>
-            </div>
-          </div>
+          {(() => {
+            const tier = getCoinTier(coin)
+            return (
+              <div className={`${tier.bg} rounded-xl p-3 flex items-center gap-3`}>
+                <span className="text-2xl">{tier.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs font-semibold text-gray-600 dark:text-gray-300">{t('estimatedMarketValue')}</p>
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${tier.bg} ${tier.color} border border-current/20`}>
+                      {tier.label}
+                    </span>
+                  </div>
+                  <p className={`text-xl font-bold mt-0.5 ${tier.color}`}>
+                    {tier.range}
+                  </p>
+                  {coin.mintage > 0 && (
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      {coin.mintage.toLocaleString('es')} unidades acuñadas
+                    </p>
+                  )}
+                </div>
+              </div>
+            )
+          })()}
 
           {/* Nota privada */}
           <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
