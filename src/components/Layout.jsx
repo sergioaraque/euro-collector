@@ -5,6 +5,8 @@ import { useAdmin } from '../hooks/useAdmin'
 import { useCoins } from '../hooks/useCoins'
 import GlobalSearch from './GlobalSearch'
 import Tour from './Tour'
+import MilestoneBanner from './MilestoneBanner'
+import { useMilestones } from '../hooks/useMilestones'
 import { useTranslation } from 'react-i18next'
 import { useTheme, THEME_LIST } from '../context/ThemeContext'
 import { useState, useRef, useEffect } from 'react'
@@ -20,6 +22,7 @@ export default function Layout() {
   const location = useLocation()
   const { ALL_COINS, COUNTRIES, loading } = useCoins()
   const { t, i18n } = useTranslation()
+  const { milestone, dismiss } = useMilestones()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
   const [tourOpen, setTourOpen] = useState(() => !localStorage.getItem('tour_seen'))
@@ -383,6 +386,7 @@ export default function Layout() {
       </footer>
 
       {tourOpen && <Tour onClose={handleTourClose} />}
+      <MilestoneBanner milestone={milestone} onDismiss={dismiss} />
     </div>
   )
 }
