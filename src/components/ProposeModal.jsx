@@ -129,6 +129,7 @@ export default function ProposeModal({ onClose, user }) {
         </h2>
         <button
           onClick={onClose}
+          aria-label="Cerrar"
           className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl leading-none"
         >
           ✕
@@ -235,7 +236,7 @@ export default function ProposeModal({ onClose, user }) {
             {preview && (
               <img
                 src={preview}
-                alt="preview"
+                alt="Vista previa de la imagen propuesta"
                 className="h-12 w-12 object-contain rounded-lg border border-gray-200 dark:border-gray-600"
               />
             )}

@@ -15,7 +15,11 @@ export default function CoinCard({ coin, isOwned, onToggle, hasNote = false, qua
       {/* Imagen — click navega al detalle */}
       <div
         className="relative bg-gray-50 dark:bg-gray-700 flex items-center justify-center h-28 cursor-pointer"
+        role="button"
+        aria-label={`Ver ${coin.country} ${coin.year}`}
+        tabIndex={0}
         onClick={() => navigate(`/moneda/${coin.id}`)}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/moneda/${coin.id}`) } }}
       >
         {status === 'error' ? (
           <div className="flex flex-col items-center gap-1 text-gray-300">
@@ -62,7 +66,11 @@ export default function CoinCard({ coin, isOwned, onToggle, hasNote = false, qua
       {/* Info — click navega al detalle */}
       <div
         className="p-2 cursor-pointer flex flex-col"
+        role="button"
+        aria-label={`Ver ${coin.country} ${coin.year}`}
+        tabIndex={0}
         onClick={() => navigate(`/moneda/${coin.id}`)}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/moneda/${coin.id}`) } }}
       >
         <p className="text-xs font-semibold text-blue-800 dark:text-blue-400 truncate">{coin.country}</p>
         <p className="text-sm font-bold text-gray-800 dark:text-white">{coin.year}</p>

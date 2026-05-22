@@ -10,7 +10,11 @@ export default function CoinRow({ coin, isOwned, onToggle }) {
       className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition ${
         isOwned ? 'bg-green-50 dark:bg-green-900/10' : ''
       }`}
+      tabIndex={0}
+      role="button"
+      aria-label={`Ver ${coin.country} ${coin.year}`}
       onClick={() => navigate(`/moneda/${coin.id}`)}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/moneda/${coin.id}`) } }}
     >
       {/* Imagen */}
       <td className="px-4 py-2">
